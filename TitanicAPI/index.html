@@ -191,7 +191,6 @@
         };
 
         // Define your FastAPI endpoint URL
-        // IMPORTANT: This has been corrected to point to your FastAPI server
         const fastapiEndpoint = "http://127.0.0.1:8000/predict";
 
         try {
@@ -215,14 +214,18 @@
 
           let resultText = "";
           let resultClass = "";
-          if (prediction == 0) {
+          // --- FIX APPLIED HERE ---
+          // If prediction is 1 (Survived), show "Survived"
+          if (prediction === 1) {
             resultText = "✅ Survived";
             resultClass = "bg-green-100 text-green-700";
-          } 
+          }
+          // If prediction is 0 (Did Not Survive), show "Did Not Survive"
           else {
             resultText = "❌ Did Not Survive";
             resultClass = "bg-red-100 text-red-700";
           }
+          // --- END FIX ---
 
           predictionResult.textContent = `Prediction: ${resultText}`;
           predictionResult.className = `mt-6 p-4 text-center text-lg font-semibold rounded-md ${resultClass}`;
