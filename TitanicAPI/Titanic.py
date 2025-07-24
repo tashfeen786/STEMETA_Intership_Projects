@@ -8,7 +8,11 @@ with open("model.pkl", "rb") as f:
     model = pickle.load(f)
 
 # Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(
+    title="Titanic Survived Prediction API",
+    description="This API predicts survival on the Titanic based on passenger data.",
+    version="1.0.0",
+)
 
 # Pydantic model for input data
 class Passenger(BaseModel):
