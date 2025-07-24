@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Titanic Survival Prediction</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f0f2f5; /* Light gray background */
+      }
+      /* Custom styles for better appearance */
+      .input-field {
+        @apply w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+      }
+      .label {
+        @apply block text-sm font-medium text-gray-700 mb-1;
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+      <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">
+        🚢 Titanic Survival Prediction App
+      </h1>
+      <p class="text-center text-gray-600 mb-6">
+        Enter passenger details below to predict survival.
+      </p>
+
+      <form id="predictionForm" class="space-y-4">
+        <div>
+          <label for="pclass" class="label"
+            >Passenger Class (1 = 1st, 2 = 2nd, 3 = 3rd)</label
+          >
+          <select id="pclass" class="input-field">
+            <option value="1">1st Class</option>
+            <option value="2">2nd Class</option>
+            <option value="3">3rd Class</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sex" class="label">Sex</label>
+          <select id="sex" class="input-field">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="age" class="label"
+            >Age: <span id="ageValue">25</span></label
+          >
+          <input
+            type="range"
+            id="age"
+            min="0"
+            max="100"
+            value="25"
+            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+        </div>
+
+        <div>
+          <label for="sibsp" class="label"
+            >Number of Siblings/Spouses Aboard</label
+          >
+          <input
+            type="number"
+            id="sibsp"
+            min="0"
+            max="10"
+            value="0"
+            class="input-field"
+          />
+        </div>
+
+        <div>
+          <label for="parch" class="label"
+            >Number of Parents/Children Aboard</label
+          >
+          <input
+            type="number"
+            id="parch"
+            min="0"
+            max="10"
+            value="0"
+            class="input-field"
+          />
+        </div>
+
+        <div>
+          <label for="fare" class="label">Passenger Fare</label>
+          <input
+            type="number"
+            id="fare"
+            min="0.0"
+            max="600.0"
+            value="30.0"
+            step="0.01"
+            class="input-field"
+          />
+        </div>
+
+        <div>
+          <label for="embarked" class="label">Port of Embarkation</label>
+          <select id="embarked" class="input-field">
+            <option value="S">Southampton (S)</option>
+            <option value="C">Cherbourg (C)</option>
+            <option value="Q">Queenstown (Q)</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          id="predictButton"
+          class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-300 ease-in-out shadow-md"
+        >
+          Predict Survival
+        </button>
+      </form>
+
+      <div
+        id="predictionResult"
+        class="mt-6 p-4 text-center text-lg font-semibold rounded-md hidden"
+      >
+        <!-- Prediction result will be displayed here -->
+      </div>
+      <div
+        id="errorMessage"
+        class="mt-4 p-3 text-center text-red-700 bg-red-100 border border-red-400 rounded-md hidden"
+      >
+        <!-- Error messages will be displayed here -->
+      </div>
+    </div>
+
+    <script>
+      // Get references to DOM elements
+      const ageInput = document.getElementById("age");
+      const ageValueSpan = document.getElementById("ageValue");
+      const predictionForm = document.getElementById("predictionForm");
+      const predictButton = document.getElementById("predictButton");
+      const predictionResult = document.getElementById("predictionResult");
+      const errorMessageDiv = document.getElementById("errorMessage");
+
+      // Update age value display as slider moves
+      ageInput.addEventListener("input", () => {
+        ageValueSpan.textContent = ageInput.value;
+      });
+
+      // Handle form submission
+      predictionForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        // Clear previous results and errors
+        predictionResult.classList.add("hidden");
+        errorMessageDiv.classList.add("hidden");
+        predictionResult.textContent = "";
+        errorMessageDiv.textContent = "";
+
+        // Show loading state
+        predictButton.textContent = "Predicting...";
+        predictButton.disabled = true;
+        predictButton.classList.add("opacity-70", "cursor-not-allowed");
+
+        // Collect user input
+        const pclass = parseInt(document.getElementById("pclass").value);
+        const sex = document.getElementById("sex").value;
+        const age = parseInt(document.getElementById("age").value);
+        const sibsp = parseInt(document.getElementById("sibsp").value);
+        const parch = parseInt(document.getElementById("parch").value);
+        const fare = parseFloat(document.getElementById("fare").value);
+        const embarked = document.getElementById("embarked").value;
+
+        // Prepare the data payload for FastAPI
+        const payload = {
+          pclass: pclass,
+          sex: sex,
+          age: age,
+          sibsp: sibsp,
+          parch: parch,
+          fare: fare,
+          embarked: embarked,
+        };
+
+        // Define your FastAPI endpoint URL
+        // IMPORTANT: This has been corrected to point to your FastAPI server
+        const fastapiEndpoint = "http://127.0.0.1:8000/predict";
+
+        try {
+          const response = await fetch(fastapiEndpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+              errorData.detail || "Something went wrong with the prediction."
+            );
+          }
+
+          const data = await response.json();
+          const prediction = data.prediction; // Assuming FastAPI returns { "prediction": 0 or 1 }
+
+          let resultText = "";
+          let resultClass = "";
+          if (prediction == 0) {
+            resultText = "✅ Survived";
+            resultClass = "bg-green-100 text-green-700";
+          } 
+          else {
+            resultText = "❌ Did Not Survive";
+            resultClass = "bg-red-100 text-red-700";
+          }
+
+          predictionResult.textContent = `Prediction: ${resultText}`;
+          predictionResult.className = `mt-6 p-4 text-center text-lg font-semibold rounded-md ${resultClass}`;
+          predictionResult.classList.remove("hidden");
+        } catch (error) {
+          console.error("Prediction error:", error);
+          errorMessageDiv.textContent = `Error: ${error.message}`;
+          errorMessageDiv.classList.remove("hidden");
+        } finally {
+          // Reset button state
+          predictButton.textContent = "Predict Survival";
+          predictButton.disabled = false;
+          predictButton.classList.remove("opacity-70", "cursor-not-allowed");
+        }
+      });
+    </script>
+  </body>
+</html>
