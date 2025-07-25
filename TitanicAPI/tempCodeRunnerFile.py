@@ -1,0 +1,1 @@
+uvicorn TitanicAPI.Titanic:app --reloa
