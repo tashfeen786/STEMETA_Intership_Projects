@@ -105,3 +105,7 @@ async def predict_survival(passenger: PassengerDetails):
     except Exception as e:
         print(f"Prediction error: {e}") # Debugging ke liye server console par print karein
         return {"error": str(e), "message": "Prediction failed due to an internal server error. Please check the input data and server logs."}
+
+
+# To run the FastAPI app, use the command:
+# uvicorn TitanicAPI.Titanic:app --reload
