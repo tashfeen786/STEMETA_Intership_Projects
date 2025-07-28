@@ -1,0 +1,27 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spam Email Detection</title>
+  </head>
+  <body>
+    <h1>Spam Email Detection</h1>
+    <form method="POST">
+      <label>Feature 1:</label>
+      <input type="text" name="feature1" required /><br /><br />
+
+      <label>Feature 2:</label>
+      <input type="text" name="feature2" required /><br /><br />
+
+      <label>Feature 3:</label>
+      <input type="text" name="feature3" required /><br /><br />
+
+      <input type="submit" value="Predict" />
+    </form>
+
+    {% if prediction is not none %}
+    <h2>Prediction: {{ prediction }}</h2>
+    {% endif %}
+  </body>
+</html>

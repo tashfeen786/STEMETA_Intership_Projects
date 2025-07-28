@@ -5,7 +5,7 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the saved CatBoost model
-with open("catboost_model.pkl", "rb") as f:
+with open("F:\\STEMETA_Intership_Projects\\Spam_email_Detection\\catboost_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 @app.route("/", methods=["GET", "POST"])
