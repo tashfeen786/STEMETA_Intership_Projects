@@ -1,5 +1,6 @@
 # STEMETA_Intership_Projects
 
+add Spam detection project in repo
 
 👨‍💻 Author
 Tashfeen Aziz
